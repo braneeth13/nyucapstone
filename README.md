@@ -2,9 +2,15 @@
 
 A mobile-first web app (installable PWA) for [Nata](https://www.nata.nyc), the pastel de nata shop at 11 Waverly Place in Greenwich Village.
 
+## Design
+
+The UI follows the HeyTea app's style: a monochrome, airy layout with black call-to-action buttons, line-art product illustrations on soft grey tiles, a full-width swipeable banner on Home, a category sidebar on the menu, a dark floating cart bar, bottom-sheet product options, and a large pickup number. Nata's own touches are custard-yellow highlights, azulejo blue for membership, and the Fraunces wordmark.
+
+Tabs: **Home · Order · Club · Orders · Me**.
+
 ## Features
 
-- **Order ahead**: menu (natas, boxes, drinks, Lisboa Combo) with options such as topping, milk and temperature, a bag, pickup-time slots generated from store hours, and a mock checkout with live order status.
+- **Order ahead**: sidebar menu (Popular, Natas, Drinks, Combos) with options such as topping, milk, sweetness and ice, a bag, pickup-time slots generated from store hours, and a mock checkout with live order status.
 - **Nata Club subscription** (modeled on Blank Street's membership):
   - *Bica Club* ($29/mo): one bica or galão a day, plus 10% off boxes.
   - *Saudade Club* ($49/mo): any drink and one nata a day, plus 10% off boxes.
@@ -28,8 +34,8 @@ src/
   data/       menu.ts, club.ts, store.ts: prices, plans, hours and copy (edit these first)
   lib/        pricing.ts (discounts, tax, stamps), hours.ts (NY-time hours, pickup slots)
   state/      AppState.tsx: cart, membership, stamps and orders, saved to localStorage
-  components/ Header, TabBar, ItemSheet, Azulejo tile band
-  pages/      Home, Menu, Cart, OrderStatus, Club, Rewards, Visit
+  components/ TabBar, CartBar, ItemSheet, PageTop, ProductArt (SVG illustrations), Azulejo
+  pages/      Home, Menu, Cart, OrderStatus, Orders, Club, Rewards, Visit, Me
 ```
 
 ## Placeholders to confirm with the shop

@@ -1,4 +1,8 @@
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Azulejo from '../components/Azulejo';
+import PageTop from '../components/PageTop';
+import ProductArt from '../components/ProductArt';
 import { HOURS, STORE, STORY } from '../data/store';
 import { dayName, formatMinutes, nyParts, openStatus } from '../lib/hours';
 
@@ -8,19 +12,28 @@ export default function Visit() {
   const now = new Date();
   const status = openStatus(now);
   const today = nyParts(now).weekday;
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) document.querySelector(hash)?.scrollIntoView();
+  }, [hash]);
 
   return (
     <div className="page">
-      <h1>Visit us</h1>
+      <PageTop title="Store" back />
 
-      <section className="card">
-        <p className={`pill ${status.open ? 'open' : 'closed'}`}>{status.label}</p>
-        <h2 className="h3">
-          {STORE.address}
-          <br />
-          <span className="muted">{STORE.cityLine}</span>
-        </h2>
-        <p className="muted small">Greenwich Village, steps from Washington Square Park. Grab-and-go only.</p>
+      <section className="block store-card">
+        <div className="store-map" aria-hidden="true">
+          <Azulejo />
+          <span className="map-pin">
+            <ProductArt id="nata" size={44} />
+          </span>
+        </div>
+        <h2>Nata · Greenwich Village</h2>
+        <p className="muted">
+          {STORE.address}, {STORE.cityLine}
+        </p>
+        <span className={`status ${status.open ? 'ok' : 'off'}`}>{status.label}</span>
         <div className="btn-row">
           <a className="btn primary" href={STORE.mapsUrl} target="_blank" rel="noreferrer">
             Directions
@@ -31,8 +44,8 @@ export default function Visit() {
         </div>
       </section>
 
-      <section className="card">
-        <h2 className="h3">Hours</h2>
+      <section className="block">
+        <h2 className="sec-title">Hours</h2>
         <table className="hours">
           <tbody>
             {ORDER.map((d) => (
@@ -47,22 +60,11 @@ export default function Visit() {
         </table>
       </section>
 
-      <Azulejo />
-
-      <section className="story">
-        <h2>Our story</h2>
+      <section className="block story" id="story">
+        <h2 className="sec-title">Our story</h2>
         {STORY.map((p) => (
           <p key={p}>{p}</p>
         ))}
-      </section>
-
-      <section className="card social">
-        <a href={STORE.instagram} target="_blank" rel="noreferrer">
-          📸 @nata.nyc on Instagram
-        </a>
-        <a href={STORE.website} target="_blank" rel="noreferrer">
-          🌐 nata.nyc
-        </a>
       </section>
     </div>
   );

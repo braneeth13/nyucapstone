@@ -13,7 +13,7 @@ export default function Azulejo({ className = '' }: { className?: string }) {
           <circle cx="28" cy="28" r="4" fill="var(--azul)" />
         </pattern>
       </defs>
-      <rect width="100%" height="28" fill="url(#tile)" />
+      <rect width="100%" height="100%" fill="url(#tile)" />
     </svg>
   );
 }

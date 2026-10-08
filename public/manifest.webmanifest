@@ -4,7 +4,7 @@
   "description": "Order pastéis de nata ahead, join the Nata Club, and collect rewards.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fbf5ea",
-  "theme_color": "#1f4e9c",
+  "background_color": "#f5f5f5",
+  "theme_color": "#ffffff",
   "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
 }

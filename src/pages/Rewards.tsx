@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
+import PageTop from '../components/PageTop';
 import { STAMPS_PER_REWARD } from '../data/club';
-import { money } from '../lib/pricing';
 import { useApp } from '../state/AppState';
 
 export default function Rewards() {
@@ -10,58 +10,57 @@ export default function Rewards() {
 
   return (
     <div className="page">
-      <h1>Rewards</h1>
-      <p className="muted">Every nata you buy earns a stamp. Ten stamps get you a free nata.</p>
+      <PageTop title="Rewards" back />
 
       <section className="stamp-card" aria-label={`${filled} of ${STAMPS_PER_REWARD} stamps`}>
-        <div className="stamp-card-head">
-          <span className="wordmark small">
+        <div className="stamp-head">
+          <span className="club-mark">
             nata<span>.</span>
           </span>
           <span>Cartão de fidelidade</span>
         </div>
+        <div className="stamp-count">
+          <strong>{filled}</strong>/{STAMPS_PER_REWARD}
+        </div>
         <div className="stamps">
           {Array.from({ length: STAMPS_PER_REWARD }, (_, i) => (
             <span key={i} className={`stamp ${i < filled ? 'on' : ''}`}>
-              {i < filled ? '🥧' : i + 1}
+              {i < filled ? '' : i + 1}
             </span>
           ))}
         </div>
-        <p className="stamp-foot">
-          {STAMPS_PER_REWARD - filled} more until your next free nata
-        </p>
       </section>
 
-      {rewards > 0 && (
-        <div className="notice success">
-          🎉 You have {rewards} free {rewards === 1 ? 'nata' : 'natas'} ready. Redeem at checkout.
-        </div>
+      {rewards > 0 ? (
+        <section className="block reward-ready">
+          <strong>
+            {rewards} free {rewards === 1 ? 'nata' : 'natas'} ready
+          </strong>
+          <span>Switch it on at checkout.</span>
+          <Link to="/menu" className="btn primary small">
+            Use now
+          </Link>
+        </section>
+      ) : (
+        <p className="center muted">{STAMPS_PER_REWARD - filled} more natas until your next free one.</p>
       )}
 
-      <section>
-        <h2>Order history</h2>
-        {state.orders.length === 0 ? (
-          <p className="muted">
-            No orders yet. <Link to="/menu">Start your first one →</Link>
-          </p>
-        ) : (
-          <ul className="history">
-            {state.orders.slice(0, 20).map((o) => (
-              <li key={o.id}>
-                <Link to={`/order/${o.id}`}>
-                  <span>
-                    <strong>#{o.id}</strong>
-                    <span className="muted small"> · {new Date(o.createdAt).toLocaleDateString()}</span>
-                  </span>
-                  <span>
-                    {money(o.totals.total)}
-                    {o.totals.stampsEarned > 0 && <span className="muted small"> · +{o.totals.stampsEarned}⭐</span>}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
+      <section className="block how">
+        <h2 className="sec-title">How it works</h2>
+        <ol>
+          <li>
+            <strong>Order a nata</strong>
+            <span>Every tart you pay for, including boxes and combos, earns one stamp.</span>
+          </li>
+          <li>
+            <strong>Collect 10 stamps</strong>
+            <span>Your card fills up automatically. There’s nothing to scan.</span>
+          </li>
+          <li>
+            <strong>Enjoy one on us</strong>
+            <span>Turn on the reward at checkout and a nata is free.</span>
+          </li>
+        </ol>
       </section>
     </div>
   );

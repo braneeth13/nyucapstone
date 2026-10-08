@@ -22,6 +22,7 @@ export interface MenuItem {
   espressoBar?: boolean;
   emoji: string;
   seasonal?: boolean;
+  tags?: string[];
   options?: OptionGroup[];
 }
 
@@ -58,6 +59,28 @@ const milk: OptionGroup = {
   ],
 };
 
+const sweetness: OptionGroup = {
+  id: 'sweet',
+  label: 'Sweetness',
+  default: 'regular',
+  choices: [
+    { id: 'regular', label: 'Regular' },
+    { id: 'less', label: 'Less sweet' },
+    { id: 'none', label: 'No sugar' },
+  ],
+};
+
+const ice: OptionGroup = {
+  id: 'ice',
+  label: 'Ice',
+  default: 'regular',
+  choices: [
+    { id: 'regular', label: 'Regular ice' },
+    { id: 'light', label: 'Light ice' },
+    { id: 'none', label: 'No ice' },
+  ],
+};
+
 export const MENU: MenuItem[] = [
   {
     id: 'nata',
@@ -68,6 +91,7 @@ export const MENU: MenuItem[] = [
     natas: 1,
     isDrink: false,
     emoji: '🥧',
+    tags: ['Best seller'],
     options: [topping],
   },
   {
@@ -124,7 +148,8 @@ export const MENU: MenuItem[] = [
     natas: 0,
     isDrink: true,
     emoji: '🧋',
-    options: [milk],
+    tags: ['New'],
+    options: [milk, sweetness, ice],
   },
   {
     id: 'matcha-lemonade',
@@ -135,6 +160,8 @@ export const MENU: MenuItem[] = [
     natas: 0,
     isDrink: true,
     emoji: '🍵',
+    tags: ['Popular'],
+    options: [sweetness, ice],
   },
   {
     id: 'seasonal',
@@ -157,6 +184,7 @@ export const MENU: MenuItem[] = [
     natas: 2,
     isDrink: false,
     emoji: '🇵🇹',
+    tags: ['Signature'],
   },
 ];
 

@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import PageTop from '../components/PageTop';
+import ProductArt from '../components/ProductArt';
 import { getItem } from '../data/menu';
+import { STORE } from '../data/store';
+import { ORDER_STEPS, orderStep, pickupNumber } from '../lib/orderStatus';
 import { describeOptions, money } from '../lib/pricing';
 import { useApp } from '../state/AppState';
-
-const STEPS = [
-  { label: 'Order received', after: 0 },
-  { label: 'In the oven', after: 15_000 },
-  { label: 'Ready for pickup', after: 45_000 },
-];
 
 export default function OrderStatus() {
   const { id } = useParams();
@@ -23,77 +21,99 @@ export default function OrderStatus() {
 
   if (!order) {
     return (
-      <div className="page empty">
-        <h1>Order not found</h1>
-        <Link to="/menu" className="btn primary">
-          Start an order
-        </Link>
+      <div className="page">
+        <PageTop title="Order" back />
+        <div className="empty">
+          <h2>Order not found</h2>
+          <Link to="/menu" className="btn primary">
+            Start an order
+          </Link>
+        </div>
       </div>
     );
   }
 
-  // Simulated progress so the demo shows the full flow; a real build would poll the POS.
-  const elapsed = now - order.createdAt;
-  const current = STEPS.filter((s) => elapsed >= s.after).length - 1;
-  const ready = current === STEPS.length - 1;
+  const step = orderStep(order.createdAt, now);
+  const ready = step === ORDER_STEPS.length - 1;
 
   return (
-    <div className="page">
-      <div className={`status-hero ${ready ? 'ready' : ''}`}>
-        <div className="big-emoji">{ready ? '🎉' : '🔥'}</div>
-        <h1>{ready ? `Ready, ${order.name}!` : `Thanks, ${order.name}!`}</h1>
+    <div className="page status-page">
+      <PageTop title="Order details" right={<Link to="/" className="top-link">Done</Link>} />
+
+      <section className={`block status-card ${ready ? 'ready' : ''}`}>
+        <span className="eyebrow">{ready ? 'Ready for pickup' : 'Pickup number'}</span>
+        <div className="pickup-no">{pickupNumber(order.id)}</div>
         <p>
-          Order <strong>#{order.id}</strong> · {order.pickup}
+          {ready ? `See you at the counter, ${order.name}!` : `Thanks, ${order.name}. We’re on it.`}
+          <br />
+          <span className="muted">
+            {order.pickup} · {STORE.address}
+          </span>
         </p>
-      </div>
-
-      <ol className="steps">
-        {STEPS.map((s, i) => (
-          <li key={s.label} className={i <= current ? 'done' : ''}>
-            <span className="dot" />
-            {s.label}
-          </li>
-        ))}
-      </ol>
-
-      <section className="card">
-        <h2 className="h3">Receipt</h2>
-        {order.lines.map((l) => (
-          <div key={l.key} className="row">
-            <span>
-              {l.qty}× {getItem(l.itemId)?.name}
-              <span className="muted small"> {describeOptions(l.itemId, l.options)}</span>
-            </span>
-            <span>{money(l.unitPrice * l.qty)}</span>
-          </div>
-        ))}
-        {order.totals.discounts.map((d) => (
-          <div key={d.label} className="row accent">
-            <span>{d.label}</span>
-            <span>−{money(d.amount)}</span>
-          </div>
-        ))}
-        <div className="row">
-          <span>Tax</span>
-          <span>{money(order.totals.tax)}</span>
+        <div className="progress-steps">
+          {ORDER_STEPS.map((s, i) => (
+            <div key={s.label} className={`pstep ${i <= step ? 'done' : ''} ${i === step ? 'current' : ''}`}>
+              <span className="pdot" />
+              <span>{s.label}</span>
+            </div>
+          ))}
         </div>
-        <div className="row strong">
-          <span>Total</span>
-          <span>{money(order.totals.total)}</span>
+      </section>
+
+      <section className="block">
+        <ul className="bag-list">
+          {order.lines.map((l) => (
+            <li key={l.key}>
+              <span className="bag-thumb">
+                <ProductArt id={l.itemId} size={48} />
+              </span>
+              <div className="grow">
+                <strong>{getItem(l.itemId)?.name}</strong>
+                <div className="sub">{describeOptions(l.itemId, l.options)}</div>
+              </div>
+              <span className="qty">×{l.qty}</span>
+              <span className="price">{money(l.unitPrice * l.qty)}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="totals">
+          {order.totals.discounts.map((d) => (
+            <div key={d.label} className="row accent">
+              <span>{d.label}</span>
+              <span>−{money(d.amount)}</span>
+            </div>
+          ))}
+          <div className="row">
+            <span>Tax</span>
+            <span>{money(order.totals.tax)}</span>
+          </div>
+          <div className="row strong">
+            <span>Paid</span>
+            <span>{money(order.totals.total)}</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="block meta">
+        <div className="row">
+          <span>Order no.</span>
+          <span>{order.id}</span>
+        </div>
+        <div className="row">
+          <span>Placed</span>
+          <span>{new Date(order.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span>
         </div>
         {order.totals.stampsEarned > 0 && (
-          <p className="muted small">+{order.totals.stampsEarned} stamps added to your card ⭐</p>
+          <div className="row">
+            <span>Stamps earned</span>
+            <span>+{order.totals.stampsEarned} ⭐</span>
+          </div>
         )}
       </section>
 
-      <div className="btn-row">
-        <Link to="/visit" className="btn">
-          Directions
-        </Link>
-        <Link to="/" className="btn primary">
-          Done
-        </Link>
-      </div>
+      <a className="btn block" href={STORE.mapsUrl} target="_blank" rel="noreferrer">
+        Directions to the shop
+      </a>
     </div>
   );
 }
